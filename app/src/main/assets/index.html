@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#123b66"><meta name="description" content="إدارة حسابات الطلاب وتحصيل مصروفات الدروس">
+<link rel="manifest" href="manifest.webmanifest">
+<title>مستر علاء | إدارة حسابات الطلاب</title>
+<style>
+:root{--navy:#123b66;--blue:#1769aa;--bg:#f3f6fa;--green:#16834b;--red:#c43c3c;--gold:#a66b00;--ink:#172536;--muted:#65758a;--line:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif}
+header{background:linear-gradient(120deg,#102f50,#1769aa);color:#fff;padding:20px 16px 24px;border-radius:0 0 22px 22px}
+.wrap{max-width:850px;margin:auto;padding:0 14px}header h1{font-size:22px;margin:0 0 5px}header p{margin:0;color:#dcecff;font-size:13px}
+.monthbar{display:flex;align-items:center;gap:8px;margin-top:16px}.monthbar input{max-width:180px}
+main{padding:16px 0 90px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:-2px}
+.stat,.panel{background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px;box-shadow:0 3px 12px #16395b0a}
+.stat small{color:var(--muted);display:block}.stat strong{font-size:22px;display:block;margin-top:5px}.green{color:var(--green)}.red{color:var(--red)}.gold{color:var(--gold)}
+.tabs{display:flex;gap:7px;overflow:auto;margin:16px 0}.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;white-space:nowrap;color:#34465a}.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.panel{margin-bottom:12px}.panel h2{font-size:17px;margin:0 0 13px}.row{display:flex;gap:9px;align-items:center}.row>*{flex:1}
+label{font-size:13px;color:#43546a;display:block;margin:10px 0 5px}input,select,textarea{width:100%;padding:11px 12px;border:1px solid #ccd6e2;border-radius:10px;background:#fff;font:inherit;color:var(--ink);min-width:0}
+button{font:inherit;border:0;border-radius:10px;padding:11px 14px;background:var(--blue);color:#fff;cursor:pointer;font-weight:650}button.secondary{background:#eaf1f8;color:var(--navy)}button.danger{background:#fff0f0;color:var(--red)}button.small{padding:7px 10px;font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.actions button{flex:1}
+.student{border:1px solid var(--line);border-radius:12px;padding:12px;margin:9px 0;background:#fff}.studenttop{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.student h3{font-size:15px;margin:0 0 4px}.muted{color:var(--muted);font-size:12px}.pill{font-size:11px;border-radius:30px;padding:4px 8px;background:#eef4fa;color:#34516d;white-space:nowrap}.pill.over{background:#fff0ed;color:var(--red)}.studentfoot{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.studentfoot button{font-size:12px;padding:8px 10px}
+.hidden{display:none!important}.empty{text-align:center;color:var(--muted);padding:25px 10px}.notice{background:#fff8e7;border:1px solid #f2dfaa;padding:10px 12px;border-radius:11px;font-size:12px;color:#735315;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:right;padding:9px 5px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:600}
+footer{position:fixed;bottom:0;left:0;right:0;background:#ffffffed;backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:10px 14px;text-align:center;color:var(--muted);font-size:11px}
+@media(min-width:650px){.stats{grid-template-columns:repeat(4,1fr)}}
+
+/* V1.4 — premium glass visual system */
+:root{--navy:#101d3b;--blue:#236bd8;--bg:#edf2fb;--green:#11865b;--red:#c34255;--gold:#a66c12;--ink:#18253d;--muted:#71809a;--line:rgba(255,255,255,.68)}
+body{background:radial-gradient(ellipse at 8% 0%,rgba(92,151,255,.19),transparent 34%),radial-gradient(ellipse at 100% 25%,rgba(75,211,184,.14),transparent 30%),linear-gradient(145deg,#f3f6fd,#e9eff9 55%,#f5f7fc);color:var(--ink);min-height:100vh}
+header{position:relative;overflow:hidden;background:linear-gradient(128deg,rgba(13,27,57,.97),rgba(28,79,145,.93) 62%,rgba(32,118,165,.9));padding:22px 16px 26px;border-radius:0 0 30px 30px;box-shadow:0 18px 45px rgba(17,43,89,.22);border-bottom:1px solid rgba(255,255,255,.2)}
+header:before,header:after{content:"";position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.07);filter:blur(1px)}
+header:before{width:220px;height:220px;right:-75px;top:-120px}
+header:after{width:150px;height:150px;left:-60px;bottom:-100px}
+header .wrap{position:relative;z-index:1}
+.brand-row{display:flex;align-items:center;gap:12px}
+.brand-mark{width:54px;height:54px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.25),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.34);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 22px rgba(0,0,0,.14);backdrop-filter:blur(12px)}
+.brand-mark span{font-size:29px;font-weight:900;color:white;text-shadow:0 3px 12px rgba(0,0,0,.2)}
+.brand-kicker{font-size:10px;color:#b8d6ff;letter-spacing:.4px;margin-bottom:2px}
+header h1{font-size:25px;letter-spacing:-.5px;margin:0 0 2px;font-weight:850}
+header p{color:#d7e8ff;font-size:12px}
+.brand-chip{margin-right:auto;align-self:flex-start;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.12);border-radius:30px;padding:5px 10px;font-size:10px;letter-spacing:1.4px;color:#d7f4ff;font-weight:800;backdrop-filter:blur(10px)}
+.monthbar{margin-top:19px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:8px 11px;max-width:300px;backdrop-filter:blur(12px)}
+.monthbar label{color:#e7f1ff!important;font-size:12px}
+.monthbar input{background:rgba(255,255,255,.95);border:0;max-width:170px;padding:8px 10px}
+main{padding:18px 0 100px}
+.stats{gap:11px}
+.stat,.panel,.student{background:rgba(255,255,255,.67);border:1px solid rgba(255,255,255,.9);border-radius:19px;box-shadow:0 9px 28px rgba(35,62,112,.07),inset 0 1px 0 rgba(255,255,255,.85);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.stat{padding:15px;position:relative;overflow:hidden}
+.stat:after{content:"";position:absolute;width:70px;height:70px;border-radius:50%;background:rgba(53,125,220,.055);left:-28px;bottom:-38px}
+.stat small{font-size:11px;font-weight:650}
+.stat strong{font-size:21px;letter-spacing:-.5px}
+.tabs{padding:4px 1px 8px;gap:8px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.55);box-shadow:0 4px 12px rgba(35,62,112,.05);border-radius:13px;padding:10px 14px;font-size:12px;font-weight:750;backdrop-filter:blur(12px)}
+.tab.active{background:linear-gradient(135deg,#142b55,#276bc4);border-color:transparent;color:white;box-shadow:0 7px 18px rgba(34,91,173,.24)}
+.panel{padding:16px;margin-bottom:13px}
+.panel h2{font-size:16px;font-weight:850;letter-spacing:-.2px}
+input,select,textarea{background:rgba(255,255,255,.82);border:1px solid rgba(169,185,211,.55);border-radius:12px;box-shadow:inset 0 1px 2px rgba(25,54,99,.025)}
+input:focus,select:focus,textarea:focus{outline:0;border-color:#5a91e4;box-shadow:0 0 0 3px rgba(49,116,214,.12)}
+button{background:linear-gradient(135deg,#246bd5,#174c9c);box-shadow:0 5px 13px rgba(35,99,190,.18);border-radius:12px;transition:transform .15s ease,box-shadow .15s ease}
+button:active{transform:translateY(1px)}
+button.secondary{background:rgba(225,236,251,.88);color:#1e4f91;box-shadow:none;border:1px solid rgba(255,255,255,.9)}
+button.danger{background:rgba(255,235,238,.9);color:#b7374a;box-shadow:none;border:1px solid rgba(255,255,255,.9)}
+.student{padding:14px;margin:10px 0}
+.student h3{font-weight:850}
+.pill{font-weight:750;border:1px solid rgba(255,255,255,.9)}
+.notice{background:rgba(255,248,226,.82);border:1px solid rgba(242,211,132,.6);border-radius:15px;box-shadow:0 5px 16px rgba(135,99,26,.05);backdrop-filter:blur(12px)}
+footer{background:rgba(255,255,255,.76);border-top:1px solid rgba(255,255,255,.9);backdrop-filter:blur(20px);font-weight:700;color:#6b7890}
+.empty{background:rgba(245,248,253,.65);border:1px dashed rgba(148,166,195,.55);border-radius:14px}
+.modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:flex-end;justify-content:center;padding:12px}
+.modal.hidden{display:none!important}
+.modal-backdrop{position:absolute;inset:0;background:rgba(9,19,40,.55);backdrop-filter:blur(7px)}
+.modal-card{position:relative;width:min(100%,560px);max-height:92vh;overflow:auto;padding:20px;border-radius:25px;background:rgba(248,251,255,.94);border:1px solid rgba(255,255,255,.9);box-shadow:0 25px 80px rgba(7,20,48,.3);backdrop-filter:blur(24px);animation:sheetIn .22s ease-out}
+@keyframes sheetIn{from{transform:translateY(18px);opacity:.65}to{transform:translateY(0);opacity:1}}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.modal-head h2{margin:3px 0;font-size:21px}
+.eyebrow{font-size:10px;color:#3976c5;font-weight:850}
+.icon-button{width:36px;height:36px;padding:0;border-radius:12px;background:rgba(224,233,246,.9);color:#39516f;box-shadow:none}
+.section-label{display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px;font-size:13px;font-weight:850}
+.text-button{padding:5px 8px;background:transparent;color:#246bd5;box-shadow:none;font-size:11px}
+.month-choices{display:grid;gap:7px;max-height:220px;overflow:auto}
+.month-choice{display:flex;align-items:center;gap:10px;padding:11px;border:1px solid rgba(168,185,212,.5);border-radius:13px;background:rgba(255,255,255,.75);margin:0;cursor:pointer}
+.month-choice input{width:18px;height:18px;accent-color:#236bd8;flex:0 0 auto}
+.month-choice-main{display:flex;flex-direction:column;gap:3px;flex:1}
+.month-choice-main b{font-size:13px}
+.month-choice-main small{font-size:11px;color:#73819a}
+.month-choice-check{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;background:#eaf1fc;color:#2868bd;font-weight:900}
+.payment-total{display:flex;justify-content:space-between;gap:10px;padding:13px 14px;margin:12px 0;border-radius:15px;background:linear-gradient(120deg,rgba(32,99,187,.09),rgba(55,180,151,.08));border:1px solid rgba(255,255,255,.95)}
+.payment-total div{display:flex;flex-direction:column;gap:3px}
+.payment-total small{font-size:10px;color:#6c7b95}
+.payment-total strong{font-size:18px;color:#174f9a}
+.allocation-preview{margin-top:10px;padding:11px 12px;background:rgba(235,241,250,.75);border-radius:13px;font-size:12px;color:#53647d;line-height:1.8}
+.allocation-preview>div{display:flex;justify-content:space-between;border-top:1px solid rgba(150,170,200,.25);padding-top:3px;margin-top:3px}
+.danger-text{color:#bd3349;font-weight:800}
+.modal-actions{display:flex;gap:9px;margin-top:15px}
+.modal-actions button{flex:1}
+@media(min-width:650px){.modal{align-items:center}.stats{grid-template-columns:repeat(4,1fr)}}
+
+</style></head>
+<body>
+<header><div class="wrap"><div class="brand-row"><div class="brand-mark"><span>م</span></div><div><div class="brand-kicker">منظومة إدارة الدروس</div><h1>مستر علاء</h1><p>حسابات الطلاب والتحصيل الذكي</p></div><div class="brand-chip">PRO</div></div>
+<div class="monthbar"><label style="color:#fff;margin:0">الشهر المحدد</label><input id="month" type="month"></div></div></header>
+<main class="wrap">
+<div class="stats">
+<div class="stat"><small>إجمالي المستحق</small><strong id="sDue">0 ج.م</strong></div>
+<div class="stat"><small>المحصّل في الشهر</small><strong class="green" id="sPaid">0 ج.م</strong></div>
+<div class="stat"><small>المتبقي للتحصيل</small><strong class="red" id="sRemain">0 ج.م</strong></div>
+<div class="stat"><small>طلاب عليهم مبالغ</small><strong class="gold" id="sLate">0</strong></div>
+</div>
+<div class="tabs">
+<button class="tab active" data-tab="overview">الرئيسية</button><button class="tab" data-tab="students">الطلاب</button><button class="tab" data-tab="add">إضافة طالب</button><button class="tab" data-tab="payments">سجل المدفوعات</button><button class="tab" data-tab="backup">النسخ الاحتياطي</button>
+</div>
+<section id="overview"><div id="monthlyAlert" class="notice hidden" role="status"></div>
+<div class="panel"><h2>ملخص الشهر</h2><div id="summary"></div></div>
+<div class="panel"><h2>الطلاب المطلوب متابعتهم</h2><div id="debtList"></div></div>
+</section>
+<section id="students" class="hidden"><div class="panel"><h2>قائمة الطلاب</h2><input id="search" placeholder="ابحث باسم الطالب أو الصف..."><div id="studentList"></div></div></section>
+<section id="add" class="hidden"><div class="panel"><h2 id="formTitle">إضافة طالب جديد</h2><form id="studentForm">
+<input type="hidden" id="editId">
+<label>اسم الطالب *</label><input id="name" required maxlength="90" placeholder="اسم الطالب">
+<div class="row"><div><label>الصف الدراسي</label><input id="grade" placeholder="مثلاً: الصف الرابع"></div><div><label>المجموعة</label><input id="group" placeholder="مثلاً: مجموعة الأحد"></div></div>
+<label>رقم ولي الأمر (اختياري)</label><input id="phone" inputmode="tel" placeholder="01xxxxxxxxx">
+<div class="notice">يمكن تحديد مبلغ مختلف لكل طالب. وعند تعديل الاشتراك لاحقاً يبدأ المبلغ الجديد من الشهر المحدد، مع الاحتفاظ بالمبالغ السابقة في سجل الحساب.</div><label>طريقة الحساب</label><select id="billing"><option value="monthly">اشتراك شهري</option><option value="lesson">بالحصة</option></select>
+<div id="monthlyBox"><label>قيمة الاشتراك الشهري لهذا الطالب (جنيه)</label><input id="monthlyFee" type="number" min="0" step="0.01" value="0"></div>
+<div id="lessonBox" class="hidden"><label>سعر الحصة الواحدة (جنيه)</label><input id="lessonPrice" type="number" min="0" step="0.01" value="0"></div>
+<label>ملاحظات</label><textarea id="notes" rows="2" placeholder="أي ملاحظات عن الطالب"></textarea>
+<div class="actions"><button type="submit">حفظ بيانات الطالب</button><button type="button" class="secondary" id="cancelEdit">إلغاء</button></div></form></div></section>
+<section id="payments" class="hidden"><div class="panel"><h2>سجل التحصيل والحصص</h2><div id="transactions"></div></div></section>
+<section id="backup" class="hidden"><div class="panel"><h2>النسخ الاحتياطي</h2><div class="notice">البيانات محفوظة على هذا الجهاز والمتصفح فقط في هذه النسخة. صدّر نسخة احتياطية بانتظام، خصوصًا قبل تغيير الهاتف أو المتصفح.</div><div class="actions"><button id="export">تصدير نسخة احتياطية</button><button class="secondary" id="importBtn">استيراد نسخة</button><input id="importFile" type="file" accept="application/json" class="hidden"></div><p class="muted">يمكنك استعادة ملف النسخة الاحتياطية الذي تم تصديره من التطبيق.</p></div></section>
+</main>
+<div id="paymentModal" class="modal hidden" aria-hidden="true">
+ <div class="modal-backdrop" onclick="closePaymentModal()"></div>
+ <div class="modal-card glass-card" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
+  <div class="modal-head">
+   <div><span class="eyebrow">تحصيل آمن ومنظم</span><h2 id="paymentTitle">تسجيل دفعة</h2><p id="paymentStudentName" class="muted"></p></div>
+   <button type="button" class="icon-button" onclick="closePaymentModal()" aria-label="إغلاق">✕</button>
+  </div>
+  <label for="receiptDate">تاريخ استلام المبلغ فعلياً</label>
+  <input id="receiptDate" type="date">
+  <div class="section-label"><span>حدد الشهور التي يسدد عنها</span><button type="button" class="text-button" onclick="selectAllDueMonths()">تحديد كل المتأخرات</button></div>
+  <div id="paymentMonthChoices" class="month-choices"></div>
+  <div class="payment-total">
+   <div><small>إجمالي المتبقي في الشهور المحددة</small><strong id="selectedDueTotal">0 ج.م</strong></div>
+   <div><small>عدد الشهور</small><strong id="selectedMonthCount">0</strong></div>
+  </div>
+  <label for="paymentAmount">المبلغ المستلم بالجنيه</label>
+  <input id="paymentAmount" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="اكتب المبلغ المستلم">
+  <div id="allocationPreview" class="allocation-preview">اختر شهراً واحداً أو أكثر لعرض توزيع الدفعة.</div>
+  <div class="modal-actions">
+   <button type="button" class="secondary" onclick="closePaymentModal()">إلغاء</button>
+   <button type="button" id="confirmPaymentBtn" onclick="confirmPayment()">تأكيد تسجيل الدفعة</button>
+  </div>
+ </div>
+</div>
+
+<footer>مستر علاء • حساباتك منظمة، وحقوقك محفوظة</footer>
+<script>
+const $=id=>document.getElementById(id), money=n=>(Number(n)||0).toLocaleString('ar-EG',{maximumFractionDigits:2})+' ج.م';
+const today=new Date(), monthKey=d=>d.slice(0,7);
+$('month').value=monthKey(today.toISOString().slice(0,10));
+let db=JSON.parse(localStorage.getItem('alaa_accounts_v1')||'{"students":[],"payments":[],"lessons":[]}');
+// Compatibility: preserve the existing per-student monthly amount as the first known rate.
+db.students.forEach(st=>{
+ if(st.billing==='monthly' && !Array.isArray(st.feeHistory)){
+  const dates=[...db.payments.filter(x=>x.studentId===st.id).map(x=>x.month),...db.lessons.filter(x=>x.studentId===st.id).map(x=>x.date.slice(0,7))].sort();
+  st.createdMonth=st.createdMonth||dates[0]||monthKey(new Date().toISOString().slice(0,10));
+  st.feeHistory=[{fromMonth:st.createdMonth,amount:Number(st.monthlyFee||0)}];
+ }
+});
+function save(){localStorage.setItem('alaa_accounts_v1',JSON.stringify(db));render()}
+function id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function month(){return $('month').value||monthKey(today.toISOString().slice(0,10))}
+function monthlyFeeFor(student, targetMonth){
+ let history=Array.isArray(student.feeHistory)?student.feeHistory.slice():[];
+ if(!history.length)return Number(student.monthlyFee||0);
+ history.sort((a,b)=>a.fromMonth.localeCompare(b.fromMonth));
+ let applicable=history.filter(x=>x.fromMonth<=targetMonth).pop();
+ return Number((applicable||history[0]).amount||0);
+}
+function studentMonthTotals(student,targetMonth){
+ let charge=student.billing==='monthly'
+  ?monthlyFeeFor(student,targetMonth)
+  :db.lessons.filter(x=>x.studentId===student.id&&x.date.startsWith(targetMonth)).reduce((a,x)=>a+Number(x.amount),0);
+ // Legacy payments already used `month` as the due month. New records keep that same field,
+ // while `date`/`receivedDate` always represent the real date cash was received.
+ let paid=db.payments.filter(x=>x.studentId===student.id&&x.month===targetMonth).reduce((a,x)=>a+Number(x.amount),0);
+ return {charge,paid,remain:Math.max(0,charge-paid)};
+}
+function monthLabel(key){
+ const [y,m]=key.split('-').map(Number);
+ return new Date(y,m-1,1).toLocaleDateString('ar-EG',{month:'long',year:'numeric'});
+}
+function monthRange(from,to){
+ const out=[];let [y,m]=from.split('-').map(Number),[ey,em]=to.split('-').map(Number);
+ for(let i=0;i<48 && (y<ey||(y===ey&&m<=em));i++){
+  out.push(y+'-'+String(m).padStart(2,'0'));m++;if(m===13){m=1;y++;}
+ }
+ return out;
+}
+function studentDueMonths(student, upto=month()){
+ const start=student.createdMonth||student.feeHistory?.[0]?.fromMonth||upto;
+ return monthRange(start,upto).map(key=>({key,label:monthLabel(key),...studentMonthTotals(student,key)}))
+  .filter(x=>x.remain>0);
+}
+function monthData(){
+ let m=month(), due=0,paid=0,rows=[];
+ db.students.forEach(s=>{
+  let totals=studentMonthTotals(s,m);
+  due+=totals.charge;paid+=totals.paid;
+  rows.push({s,...totals});
+ });
+ return {due,paid,remain:Math.max(0,due-paid),rows};
+}
+function render(){
+ let d=monthData();
+ const cashReceived=db.payments.filter(x=>(x.receivedDate||x.date||'').startsWith(month())).reduce((a,x)=>a+Number(x.amount),0);
+ $('sDue').textContent=money(d.due);$('sPaid').textContent=money(cashReceived);$('sRemain').textContent=money(d.remain);$('sLate').textContent=db.students.filter(st=>studentDueMonths(st,month()).length>0).length;
+ let owing=db.students.map(st=>({s:st,months:studentDueMonths(st,month())})).filter(x=>x.months.length);
+ $('monthlyAlert').classList.toggle('hidden',owing.length===0);
+ $('monthlyAlert').innerHTML=owing.length?`<b>تنبيه المديونيات حتى ${esc(monthLabel(month()))}</b><br>هناك ${owing.length} طالب عليهم مستحقات سابقة أو حالية: ${owing.slice(0,8).map(x=>esc(x.s.name)+' ('+money(x.months.reduce((a,m)=>a+m.remain,0))+')').join('، ')}${owing.length>8?'، وآخرون':''}`:'';
+
+ $('summary').innerHTML=`<table><tr><td>طلاب الاشتراك الشهري</td><td>${db.students.filter(s=>s.billing==='monthly').length}</td></tr><tr><td>طلاب الحساب بالحصة</td><td>${db.students.filter(s=>s.billing==='lesson').length}</td></tr><tr><td>عدد الحصص المسجلة هذا الشهر</td><td>${db.lessons.filter(x=>x.date.startsWith(month())).length}</td></tr><tr><td>المبالغ المستلمة فعلياً خلال الشهر</td><td>${money(cashReceived)}</td></tr><tr><td>عدد إيصالات التحصيل</td><td>${new Set(db.payments.filter(x=>(x.receivedDate||x.date||'').startsWith(month())).map(x=>x.receiptId||x.id)).size}</td></tr><tr><td>المسدد عن استحقاق الشهر المحدد</td><td>${money(d.paid)}</td></tr></table>`;
+ let debts=db.students.map(st=>({s:st,months:studentDueMonths(st,month())})).filter(x=>x.months.length).sort((a,b)=>b.months.reduce((t,m)=>t+m.remain,0)-a.months.reduce((t,m)=>t+m.remain,0));
+ $('debtList').innerHTML=debts.length?debts.map(x=>{let total=x.months.reduce((a,m)=>a+m.remain,0);return `<div class="student"><div class="studenttop"><div><h3>${esc(x.s.name)}</h3><div class="muted">${esc(x.s.grade||'')} ${x.s.group?'• '+esc(x.s.group):''}</div></div><span class="pill over">إجمالي عليه ${money(total)}</span></div><div class="muted">${x.months.map(m=>esc(m.label)+': '+money(m.remain)).join(' • ')}</div><div class="studentfoot"><button onclick="pay('${x.s.id}')">تسجيل دفعة</button></div></div>`}).join(''):'<div class="empty">ممتاز! لا توجد مديونيات حتى هذا الشهر 🎉</div>';
+ listStudents();renderTransactions();
+}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function listStudents(){
+ let q=($('search')?.value||'').trim().toLowerCase();
+ let arr=db.students.filter(s=>(s.name+' '+s.grade+' '+s.group).toLowerCase().includes(q));
+ $('studentList').innerHTML=arr.length?arr.map(s=>{
+  let x=studentMonthTotals(s,month()),arrears=studentDueMonths(s,month()),debtTotal=arrears.reduce((a,m)=>a+m.remain,0);
+  let status=debtTotal<=0&&x.charge>0?'<span class="pill" style="background:#e8f7ee;color:#16834b">تم السداد</span>':x.paid>0?'<span class="pill" style="background:#fff6df;color:#946200">سداد جزئي</span>':'<span class="pill over">عليه مستحقات</span>';
+  let feeText=s.billing==='monthly'?'اشتراك الشهر: '+money(x.charge):'سعر الحصة: '+money(s.lessonPrice)+' • مستحق الحصص: '+money(x.charge);
+  let debtLine=arrears.length?`<div class="muted" style="margin-top:5px;color:#b43d3d">إجمالي المتأخرات حتى ${esc(monthLabel(month()))}: <b>${money(debtTotal)}</b> — ${arrears.map(a=>esc(a.label)+': '+money(a.remain)).join(' | ')}</div>`:'';
+  return `<div class="student"><div class="studenttop"><div><h3>${esc(s.name)}</h3><div class="muted">${esc(s.grade||'بدون صف')} ${s.group?'• '+esc(s.group):''} ${s.phone?'• '+esc(s.phone):''}</div></div>${status}</div><div class="muted">${feeText} • المدفوع عن الشهر المحدد: ${money(x.paid)} • <b style="color:${x.remain>0?'#c43c3c':'#16834b'}">المتبقي للشهر: ${money(x.remain)}</b></div>${debtLine}<div class="studentfoot"><button onclick="pay('${s.id}')">تسجيل دفعة</button>${s.billing==='lesson'?`<button class="secondary" onclick="lesson('${s.id}')">تسجيل حصة</button>`:''}<button class="secondary" onclick="editStudent('${s.id}')">تعديل</button><button class="danger" onclick="removeStudent('${s.id}')">حذف</button></div></div>`;
+ }).join(''):'<div class="empty">لا يوجد طلاب مطابقون للبحث.</div>';
+}
+function renderTransactions(){
+ let m=month(),p=db.payments.filter(x=>(x.receivedDate||x.date||'').startsWith(m)).sort((a,b)=>(b.receivedDate||b.date||'').localeCompare(a.receivedDate||a.date||'')),l=db.lessons.filter(x=>x.date.startsWith(m)).sort((a,b)=>b.date.localeCompare(a.date));
+ let html=p.map(x=>{let st=db.students.find(z=>z.id===x.studentId);return `<tr><td>${esc(st?.name||'طالب محذوف')}</td><td>${esc(x.date||x.receivedDate||'')}</td><td>${esc(monthLabel(x.month))}</td><td>${money(x.amount)}</td><td>دفعة</td></tr>`}).join('')+l.map(x=>{let st=db.students.find(z=>z.id===x.studentId);return `<tr><td>${esc(st?.name||'طالب محذوف')}</td><td>${esc(x.date)}</td><td>${esc(monthLabel(x.date.slice(0,7)))}</td><td>${money(x.amount)}</td><td>حصة</td></tr>`}).join('');
+ $('transactions').innerHTML=html?`<table><tr><th>الطالب</th><th>تاريخ الاستلام</th><th>عن شهر</th><th>المبلغ</th><th>النوع</th></tr>${html}</table>`:'<div class="empty">لا توجد عمليات في هذا الشهر.</div>';
+}
+let activePaymentStudentId=null;
+let activeDueMonths=[];
+function pay(sid){
+ const st=db.students.find(x=>x.id===sid);if(!st)return;
+ activePaymentStudentId=sid;
+ activeDueMonths=studentDueMonths(st,month());
+ if(!activeDueMonths.length){
+  alert('لا توجد مستحقات غير مسددة لهذا الطالب حتى '+monthLabel(month())+'.');
+  return;
+ }
+ $('paymentStudentName').textContent=st.name+' — '+(st.grade||'');
+ $('receiptDate').value=new Date().toISOString().slice(0,10);
+ $('paymentAmount').value='';
+ $('paymentMonthChoices').innerHTML=activeDueMonths.map((m,i)=>`
+  <label class="month-choice">
+   <input type="checkbox" class="due-month-check" value="${m.key}" ${i===0?'checked':''}>
+   <span class="month-choice-main"><b>${esc(m.label)}</b><small>المتبقي: ${money(m.remain)} — المدفوع: ${money(m.paid)} من ${money(m.charge)}</small></span>
+   <span class="month-choice-check">✓</span>
+  </label>`).join('');
+ $('paymentModal').classList.remove('hidden');
+ $('paymentModal').setAttribute('aria-hidden','false');
+ document.querySelectorAll('.due-month-check').forEach(el=>el.addEventListener('change',updatePaymentPreview));
+ $('paymentAmount').oninput=updatePaymentPreview;
+ updatePaymentPreview();
+}
+function closePaymentModal(){
+ $('paymentModal').classList.add('hidden');
+ $('paymentModal').setAttribute('aria-hidden','true');
+ activePaymentStudentId=null;
+}
+function selectedDueRows(){
+ const selected=[...document.querySelectorAll('.due-month-check:checked')].map(x=>x.value);
+ return activeDueMonths.filter(x=>selected.includes(x.key)).sort((a,b)=>a.key.localeCompare(b.key));
+}
+function selectAllDueMonths(){
+ document.querySelectorAll('.due-month-check').forEach(x=>x.checked=true);
+ updatePaymentPreview();
+}
+function updatePaymentPreview(){
+ const rows=selectedDueRows(),total=rows.reduce((a,x)=>a+x.remain,0);
+ $('selectedDueTotal').textContent=money(total);
+ $('selectedMonthCount').textContent=rows.length;
+ const amount=Number($('paymentAmount').value||0);
+ if(!rows.length){$('allocationPreview').textContent='حدد شهراً واحداً على الأقل.';return;}
+ if(!amount){$('allocationPreview').textContent='سيتم توزيع المبلغ على الشهور المحددة من الأقدم إلى الأحدث.';return;}
+ if(amount>total){$('allocationPreview').innerHTML='<span class="danger-text">المبلغ أكبر من إجمالي المتبقي المحدد ('+money(total)+').</span>';return;}
+ let left=amount,parts=[];
+ rows.forEach(r=>{if(left<=0)return;let a=Math.min(left,r.remain);if(a>0){parts.push('<div><span>'+esc(r.label)+'</span><b>'+money(a)+'</b></div>');left-=a;}});
+ $('allocationPreview').innerHTML='<strong>توزيع الدفعة تلقائياً من الأقدم للأحدث</strong>'+parts.join('');
+}
+function confirmPayment(){
+ const sid=activePaymentStudentId,st=db.students.find(x=>x.id===sid);
+ if(!st)return closePaymentModal();
+ const date=$('receiptDate').value;
+ if(!date||!/^\d{4}-\d{2}-\d{2}$/.test(date)){alert('اختر تاريخ استلام صحيحاً.');return;}
+ const rows=selectedDueRows(),amount=Number($('paymentAmount').value||0),total=rows.reduce((a,x)=>a+x.remain,0);
+ if(!rows.length){alert('حدد شهراً واحداً على الأقل.');return;}
+ if(!Number.isFinite(amount)||amount<=0){alert('اكتب مبلغاً صحيحاً أكبر من صفر.');return;}
+ if(amount>total+0.000001){alert('المبلغ أكبر من إجمالي المتبقي في الشهور المحددة: '+money(total));return;}
+ let left=amount,allocations=[];
+ rows.forEach(r=>{if(left<=0)return;const part=Math.min(left,r.remain);if(part>0){allocations.push({month:r.key,amount:Math.round(part*100)/100});left=Math.round((left-part)*100)/100;}});
+ if(left>0.009){alert('تعذر توزيع المبلغ بالكامل. راجع الشهور المحددة.');return;}
+ const duplicate=allocations.some(a=>db.payments.some(p=>p.studentId===sid&&p.month===a.month&&(p.date||p.receivedDate)===date&&Number(p.amount)===a.amount));
+ if(duplicate&&!confirm('تنبيه: توجد دفعة بنفس التاريخ والقيمة على شهر من الشهور المحددة. هل تريد تسجيلها رغم ذلك؟'))return;
+ const receiptId=id();
+ const preview=allocations.map(a=>monthLabel(a.month)+': '+money(a.amount)).join('\\n');
+ if(!confirm('تأكيد استلام '+money(amount)+' من '+st.name+' بتاريخ '+date+'؟\\n\\n'+preview))return;
+ allocations.forEach(a=>db.payments.push({
+  id:id(),receiptId,studentId:sid,amount:a.amount,month:a.month,date,receivedDate:date,createdAt:new Date().toISOString()
+ }));
+ save();closePaymentModal();
+ alert('تم تسجيل الدفعة بنجاح.\\nإجمالي المستلم: '+money(amount));
+}
+function lesson(sid){
+ let s=db.students.find(x=>x.id===sid);if(!s)return;
+ let date=prompt('تاريخ الحصة (YYYY-MM-DD)',new Date().toISOString().slice(0,10));if(!date)return;
+ let amount=Number(s.lessonPrice||0);if(!amount){let v=prompt('سعر الحصة بالجنيه');if(v===null)return;amount=Number(v)}
+ if(!Number.isFinite(amount)||amount<=0)return alert('سعر الحصة غير صحيح.');
+ db.lessons.push({id:id(),studentId:sid,date,amount});save();
+}
+function editStudent(sid){
+ let s=db.students.find(x=>x.id===sid);if(!s)return;
+ $('editId').value=s.id;$('name').value=s.name;$('grade').value=s.grade||'';$('group').value=s.group||'';$('phone').value=s.phone||'';$('billing').value=s.billing;$('monthlyFee').value=s.monthlyFee||0;$('lessonPrice').value=s.lessonPrice||0;$('notes').value=s.notes||'';
+ $('formTitle').textContent='تعديل بيانات الطالب';billingFields();showTab('add');
+}
+function removeStudent(sid){let s=db.students.find(x=>x.id===sid);if(!s||!confirm('حذف الطالب '+s.name+'؟ لن تُحذف سجلاته المالية.'))return;db.students=db.students.filter(x=>x.id!==sid);save()}
+function billingFields(){$('monthlyBox').classList.toggle('hidden',$('billing').value!=='monthly');$('lessonBox').classList.toggle('hidden',$('billing').value!=='lesson')}
+$('billing').addEventListener('change',billingFields);
+$('studentForm').addEventListener('submit',e=>{e.preventDefault();let sid=$('editId').value,s={id:sid||id(),name:$('name').value.trim(),grade:$('grade').value.trim(),group:$('group').value.trim(),phone:$('phone').value.trim(),billing:$('billing').value,monthlyFee:Number($('monthlyFee').value),lessonPrice:Number($('lessonPrice').value),notes:$('notes').value.trim()};if(!s.name)return;
+ if(sid){
+  let i=db.students.findIndex(x=>x.id===sid), oldStudent=db.students[i];
+  s.feeHistory=Array.isArray(oldStudent.feeHistory)?oldStudent.feeHistory.slice():[{fromMonth:oldStudent.createdMonth||month(),amount:Number(oldStudent.monthlyFee||0)}];
+  if(s.billing==='monthly' && Number(oldStudent.monthlyFee||0)!==Number(s.monthlyFee||0)){
+    s.feeHistory=s.feeHistory.filter(x=>x.fromMonth!==month());
+    s.feeHistory.push({fromMonth:month(),amount:Number(s.monthlyFee||0)});
+    s.feeHistory.sort((a,b)=>a.fromMonth.localeCompare(b.fromMonth));
+  }
+  s.createdMonth=oldStudent.createdMonth||month();
+  db.students[i]=s;
+ }else{
+  s.createdMonth=month();
+  s.feeHistory=s.billing==='monthly'?[{fromMonth:month(),amount:Number(s.monthlyFee||0)}]:[];
+  db.students.push(s);
+ }
+ e.target.reset();$('editId').value='';$('formTitle').textContent='إضافة طالب جديد';billingFields();save();showTab('students');
+});
+$('cancelEdit').onclick=()=>{ $('studentForm').reset();$('editId').value='';$('formTitle').textContent='إضافة طالب جديد';billingFields();showTab('students')};
+function showTab(t){document.querySelectorAll('section').forEach(x=>x.classList.add('hidden'));$(t).classList.remove('hidden');document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===t))}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+$('month').onchange=render;$('search').oninput=listStudents;
+$('export').onclick=()=>{
+ const payload=JSON.stringify({...db,schemaVersion:2,appName:'مستر علاء',exportedAt:new Date().toISOString()},null,2), filename='moster-alaa-backup-'+new Date().toISOString().slice(0,10)+'.json';
+ if(window.AndroidBackup && AndroidBackup.exportBackup){AndroidBackup.exportBackup(payload,filename);return;}
+ let blob=new Blob([payload],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+$('importBtn').onclick=()=>{if(window.AndroidBackup && AndroidBackup.importBackup){AndroidBackup.importBackup();return;}$('importFile').click()};
+function normalizeImportedBackup(raw){
+ let x=raw;
+ if(x&&x.data&&typeof x.data==='object')x=x.data;
+ if(!x||!Array.isArray(x.students)||!Array.isArray(x.payments))throw new Error('invalid backup');
+ x.students=x.students.map(st=>({...st,feeHistory:Array.isArray(st.feeHistory)?st.feeHistory:undefined}));
+ x.payments=x.payments.map(p=>{
+  const actualDate=p.receivedDate||p.date||'';
+  return {...p,month:p.month||p.dueMonth||(actualDate?actualDate.slice(0,7):month()),date:actualDate,receivedDate:actualDate};
+ });
+ if(!Array.isArray(x.lessons))x.lessons=[];
+ x.students.forEach(st=>{
+  if(st.billing==='monthly'&&!Array.isArray(st.feeHistory)){
+   const months=x.payments.filter(p=>p.studentId===st.id).map(p=>p.month).sort();
+   st.createdMonth=st.createdMonth||months[0]||month();
+   st.feeHistory=[{fromMonth:st.createdMonth,amount:Number(st.monthlyFee||0)}];
+  }
+  st.createdMonth=st.createdMonth||st.feeHistory?.[0]?.fromMonth||month();
+ });
+ return {...x,schemaVersion:2};
+}
+window.importBackupFromAndroid=(payload)=>{
+ try{
+  const raw=JSON.parse(payload),x=normalizeImportedBackup(raw);
+  if(confirm('سيتم استبدال البيانات الحالية بالنسخة المستوردة. النسخ القديمة من التطبيق مدعومة. هل تريد المتابعة؟')){
+   db=x;save();alert('تم استيراد البيانات بنجاح إلى مستر علاء، مع الحفاظ على سجل المدفوعات.');
+  }
+ }catch(e){alert('ملف النسخة غير صالح أو تالف، أو لا يحتوي على بيانات الطلاب والمدفوعات.');}
+};
+$('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{window.importBackupFromAndroid(await f.text())}catch{alert('تعذر قراءة الملف.')}e.target.value=''};
+billingFields();render();
+function checkNewMonthReminder(){
+ const current=monthKey(new Date().toISOString().slice(0,10));
+ const previous=localStorage.getItem('alaa_last_reminder_month');
+ if(previous!==current){
+  const pending=monthDataFor(current).filter(x=>x.remain>0);
+  if(pending.length){
+   const names=pending.slice(0,5).map(x=>x.s.name+' ('+money(x.remain)+')').join('، ');
+   const more=pending.length>5?' وآخرون':'';
+   const title='تذكير تحصيل اشتراكات شهر '+current;
+   const body='طلاب لم يسددوا: '+names+more;
+   if(window.AndroidBackup && AndroidBackup.showMonthlyAlert) AndroidBackup.showMonthlyAlert(title,body);
+  }
+  localStorage.setItem('alaa_last_reminder_month',current);
+ }
+}
+function monthDataFor(m){
+ return db.students.map(st=>{
+  const months=studentDueMonths(st,m);
+  return {s:st,remain:months.reduce((a,x)=>a+x.remain,0),months};
+ }).filter(x=>x.remain>0);
+}
+checkNewMonthReminder();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkNewMonthReminder()});
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script></body></html>
